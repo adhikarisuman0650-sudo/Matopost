@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>My Social App</title>
+<style>
+  /* ---- Dark Cream Palette ---- */
+  :root {
+    --cream-dark: #1a1a1a;
+    --cream-light: #f6f1e7;
+    --cream-medium: #e0b060;
+    --cream-muted: #3e2f1c;
+    --bg: var(--cream-dark);
+    --fg: var(--cream-light);
+    --accent: var(--cream-medium);
+    --accent-muted: var(--cream-muted);
+  }
+  /* Reset & base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+  button, input, select, textarea {
+    font-family: inherit;
+  }
+
+  /* Sidebar */
+  #sidebar {
+    width: 250px;
+    background: var(--accent-muted);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+  #sidebar h1 {
+    font-size: 24px;
+    margin-bottom: 30px;
+    color: var(--cream-light);
+  }
+  #sidebar nav button {
+    background: none;
+    border: none;
+    color: var(--cream-light);
+    font-size: 16px;
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    text-align: left;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  #sidebar nav button:hover, #sidebar nav button.active {
+    background: var(--accent);
+    color: var(--cream-dark);
+  }
+  #sidebar nav button:focus {
+    outline: 2px solid var(--accent);
+  }
+  #sidebar .user-info {
+    margin-top: auto;
+    border-top: 1px solid var(--accent);
+    padding-top: 15px;
+    color: var(--cream-light);
+    font-size: 14px;
+  }
+  #sidebar .logout-btn {
+    margin-top: 10px;
+    background: var(--accent);
+    border: none;
+    color: var(--cream-dark);
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  #sidebar .logout-btn:hover {
+    background: var(--cream-muted);
+    color: var(--cream-light);
+  }
+
+  /* Main Content */
+  #mainContent {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  h2 {
+    margin-top: 0;
+  }
+
+  /* Forms */
+  form {
+    max-width: 600px;
+    background: var(--cream-muted);
+    padding: 15px 20px;
+    border-radius: 10px;
+    color: var(--cream-light);
+  }
+  label {
+    display: block;
+    margin-top: 12px;
+    font-weight: 600;
+  }
+  input[type=text], input[type=password], input[type=email], textarea, select {
+    width: 100%;
+    padding: 8px 10px;
+    margin-top: 6px;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+  }
+  input[type=file] {
+    margin-top: 8px;
+    color: var(--cream-light);
+  }
+  button[type=submit] {
+    margin-top: 20px;
+    background: var(--accent);
+    color: var(--cream-dark);
+    border: none;
+    padding: 10px 18px;
+    font-weight: 700;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  button[type=submit]:hover {
+    background: var(--cream-light);
+  }
+
+  /* Listings */
+  .listing {
+    background: var(--cream-muted);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+  .listing img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-top: 10px;
+  }
+  .listing .actions {
+    margin-top: 10px;
+  }
+  .listing .actions button {
+    margin-right: 8px;
+    background: var(--accent);
+    border: none;
+    color: var(--cream-dark);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .listing .actions button:hover {
+    background: var(--cream-light);
+  }
+
+  /* Image Preview */
+  #imagePreview {
+    margin-top: 10px;
+    max-width: 200px;
+    max-height: 150px;
+    border-radius: 8px;
+    object-fit: contain;
+  }
+
+  /* Chat */
+  #chatUsersList {
+    max-height: 120px;
+    overflow-y: auto;
+    border: 1px solid var(--accent);
+    padding: 8px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    background: var(--cream-muted);
+  }
+  #chatUsersList button {
+    margin: 2px 5px 2px 0;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--accent);
+    background: var(--cream-light);
+    color: var(--cream-dark);
+    cursor: pointer;
+  }
+  #chatUsersList button.active {
+    background: var(--accent);
+    color: var(--cream-dark);
+    font-weight: 700;
+  }
+  #chatMessages {
+    height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--accent);
+    background: var(--cream-muted);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    color: var(--cream-light);
+  }
+  #chatMessages div {
+    margin-bottom: 10px;
+    max-width: 70%;
+    padding: 8px 12px;
+    border-radius: 15px;
+    word-wrap: break-word;
+  }
+  #chatMessages .me {
+    background: var(--cream-light);
+    color: var(--cream-dark);
+    margin-left: auto;
+    text-align: right;
+  }
+  #chatMessages .them {
+    background: var(--cream-muted);
+    border: 1px solid var(--accent);
+  }
+  #chatForm {
+    display: flex;
+    gap: 6px;
+  }
+  #chatInput {
+    flex-grow: 1;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+  }
+  #chatForm button {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    background: var(--accent);
+    color: var(--cream-dark);
+    cursor: pointer;
+  }
+  #chatForm button:hover {
+    background: var(--cream-light);
+  }
+
+  /* Notifications */
+  #notificationWrapper {
+    position: relative;
+    display: inline-block;
+  }
+  #notifToggleBtn {
+    position: relative;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--cream-light);
+    cursor: pointer;
+  }
+  #notifBadge {
+    display: none;
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: var(--accent);
+    color: var(--cream-dark);
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+    font-weight: bold;
+    user-select: none;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+  }
+  #notifDropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 36px;
+    background: var(--cream-dark);
+    color: var(--cream-light);
+    width: 320px;
+    max-height: 350px;
+    overflow-y: auto;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.6);
+    z-index: 1000;
+  }
+  .notif-item {
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--accent);
+    cursor: default;
+  }
+  .notif-item.unread {
+    background: var(--cream-muted);
+    font-weight: 700;
+  }
+  .notif-item.read {
+    opacity: 0.7;
+  }
+  .notif-text {
+    margin-bottom: 6px;
+  }
+  .notif-time {
+    font-size: 10px;
+    color: #aaa;
+    text-align: right;
+  }
+
+  /* Modal styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.75);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1500;
+  }
+  .modal-overlay.active {
+    display: flex;
+  }
+  .modal {
+    background: var(--cream-muted);
+    border-radius: 12px;
+    padding: 25px;
+    width: 90%;
+    max-width: 480px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.8);
+    position: relative;
+    color: var(--cream-light);
+    animation: fadeInScale 0.3s ease forwards;
+  }
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scale(0.7);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  .modal h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+  }
+  .modal .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    color: var(--cream-light);
+    font-size: 20px;
+    cursor: pointer;
+  }
+  .modal .btn-group {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    gap: 12px;
+  }
+  .modal .btn-group button {
+    background: var(--accent);
+    border: none;
+    color: var(--cream-dark);
+    padding: 8px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .modal .btn-group button:hover {
+    background: var(--cream-light);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    #sidebar {
+      width: 60px;
+      padding: 10px 5px;
+    }
+    #sidebar h1, #sidebar nav button {
+      display: none;
+    }
+    #mainContent {
+      padding: 10px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <h1>MySocial</h1>
+  <nav>
+    <button class="active" data-section="feed">Feed</button>
+    <button data-section="listings">Listings</button>
+    <button data-section="chat">Chat</button>
+    <button data-section="profile">Profile</button>
+    <button data-section="notifications" id="notifBtnSidebar">Notifications <span id="sidebarNotifBadge" style="color: var(--accent); font-weight:700;"></span></button>
+  </nav>
+  <div class="user-info" id="userInfoSidebar">Not logged in</div>
+  <button class="logout-btn" id="logoutBtn" style="display:none;">Logout</button>
+</div>
+
+<div id="mainContent">
+  <!-- Feed Section -->
+  <section id="feedSection" class="section active">
+    <h2>Welcome to the Feed</h2>
+    <p>Recent activity and posts will appear here.</p>
+  </section>
+
+  <!-- Listings Section -->
+  <section id="listingsSection" class="section" style="display:none;">
+    <h2>Listings</h2>
+    <form id="listingForm">
+      <label for="listingTitle">Title</label>
+      <input id="listingTitle" name="title" type="text" required placeholder="Listing title" />
+      <label for="listingDesc">Description</label>
+      <textarea id="listingDesc" name="description" rows="3" required placeholder="Describe your listing"></textarea>
+      <label for="listingImage">Image (JPEG/PNG)</label>
+      <input id="listingImage" name="image" type="file" accept="image/png, image/jpeg" />
+      <img id="imagePreview" alt="Preview" style="display:none;" />
+      <button type="submit">Post Listing</button>
+    </form>
+    <div id="listingsContainer"></div>
+  </section>
+
+  <!-- Chat Section -->
+  <section id="chatSection" class="section" style="display:none;">
+    <h2>Chat</h2>
+    <div id="chatUsersList"></div>
+    <div id="chatMessages"></div>
+    <form id="chatForm">
+      <input id="chatInput" type="text" placeholder="Type a message" autocomplete="off" required />
+      <button type="submit">Send</button>
+    </form>
+  </section>
+
+  <!-- Profile Section -->
+  <section id="profileSection" class="section" style="display:none;">
+    <h2>Your Profile</h2>
+    <form id="profileForm">
+      <label for="profileName">Name</label>
+      <input id="profileName" type="text" placeholder="Your full name" required />
+      <label for="profileEmail">Email (cannot change)</label>
+      <input id="profileEmail" type="email" disabled />
+      <button type="submit">Update Profile</button>
+    </form>
+  </section>
+
+  <!-- Notifications Section -->
+  <section id="notificationsSection" class="section" style="display:none;">
+    <h2>Notifications</h2>
+    <div id="notifDropdown"></div>
+  </section>
+
+  <!-- Login/Register modal -->
+  <div id="authModal" class="modal-overlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+      <button class="close-btn" id="authModalClose">&times;</button>
+      <h3 id="authModalTitle">Login or Register</h3>
+      <form id="authForm">
+        <label for="authEmail">Email</label>
+        <input id="authEmail" type="email" required />
+        <label for="authPassword">Password</label>
+        <input id="authPassword" type="password" required />
+        <button type="submit" id="authSubmitBtn">Login</button>
+      </form>
+      <p id="toggleAuthText" style="margin-top: 10px; cursor: pointer; color: var(--accent);">Don't have an account? Register here</p>
+    </div>
+  </div>
+
+  <!-- Confirm Delete modal -->
+  <div id="confirmModal" class="modal-overlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+      <h3 id="confirmModalTitle">Confirm Action</h3>
+      <p id="confirmModalMessage"></p>
+      <div class="btn-group">
+        <button id="confirmCancelBtn">Cancel</button>
+        <button id="confirmOkBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+<script type="module">
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyDIXGXgQHkwht2EhdddcQ8niMb8PkVb_Qg",
+  authDomain: "mysocialapp07-10.firebaseapp.com",
+  projectId: "mysocialapp07-10",
+  storageBucket: "mysocialapp07-10.firebasestorage.app",
+  messagingSenderId: "315720258321",
+  appId: "1:315720258321:web:6ce2922277613e7a11b2bdoctype"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// --- Elements ---
+const userInfoSidebar = document.getElementById("userInfoSidebar");
+const logoutBtn = document.getElementById("logoutBtn");
+const sections = document.querySelectorAll(".section");
+const navButtons = document.querySelectorAll("#sidebar nav button:not(#notifBtnSidebar)");
+const notifBtnSidebar = document.getElementById("notifBtnSidebar");
+const sidebarNotifBadge = document.getElementById("sidebarNotifBadge");
+
+const authModal = document.getElementById("authModal");
+const authModalClose = document.getElementById("authModalClose");
+const authForm = document.getElementById("authForm");
+const authEmail = document.getElementById("authEmail");
+const authPassword = document.getElementById("authPassword");
+const authSubmitBtn = document.getElementById("authSubmitBtn");
+const toggleAuthText = document.getElementById("toggleAuthText");
+
+const listingForm = document.getElementById("listingForm");
+const listingTitle = document.getElementById("listingTitle");
+const listingDesc = document.getElementById("listingDesc");
+const listingImage = document.getElementById("listingImage");
+const imagePreview = document.getElementById("imagePreview");
+const listingsContainer = document.getElementById("listingsContainer");
+
+const chatUsersList = document.getElementById("chatUsersList");
+const chatMessages = document.getElementById("chatMessages");
+const chatForm = document.getElementById("chatForm");
+const chatInput = document.getElementById("chatInput");
+
+const profileForm = document.getElementById("profileForm");
+const profileName = document.getElementById("profileName");
+const profileEmail = document.getElementById("profileEmail");
+
+const notificationsSection = document.getElementById("notificationsSection");
+const notifDropdown = document.getElementById("notifDropdown");
+
+// Confirm modal
+const confirmModal = document.getElementById("confirmModal");
+const confirmModalMessage = document.getElementById("confirmModalMessage");
+const confirmCancelBtn = document.getElementById("confirmCancelBtn");
+const confirmOkBtn = document.getElementById("confirmOkBtn");
+
+// Notification button in sidebar toggles notifications section
+notifBtnSidebar.addEventListener("click", () => {
+  activateSection("notifications");
+  hideNotifDropdown();
+});
+
+// Navigation buttons click handler
+navButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    activateSection(btn.dataset.section);
+  });
+});
+
+function activateSection(sectionId) {
+  sections.forEach(sec => {
+    sec.style.display = sec.id === sectionId + "Section" ? "block" : "none";
+  });
+  navButtons.forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.section === sectionId);
+  });
+  hideNotifDropdown();
+}
+
+// Authentication modal toggle between login/register
+let isLoginMode = true;
+toggleAuthText.addEventListener("click", () => {
+  isLoginMode = !isLoginMode;
+  authSubmitBtn.textContent = isLoginMode ? "Login" : "Register";
+  toggleAuthText.textContent = isLoginMode
+    ? "Don't have an account? Register here"
+    : "Already have an account? Login here";
+});
+
+// Show auth modal
+function showAuthModal() {
+  authModal.classList.add("active");
+}
+function hideAuthModal() {
+  authModal.classList.remove("active");
+}
+
+// Close auth modal btn
+authModalClose.addEventListener("click", () => {
+  hideAuthModal();
+});
+
+// Confirm modal control
+let confirmResolve;
+function showConfirm(message) {
+  confirmModalMessage.textContent = message;
+  confirmModal.classList.add("active");
+  return new Promise((resolve) => {
+    confirmResolve = resolve;
+  });
+}
+confirmCancelBtn.addEventListener("click", () => {
+  confirmModal.classList.remove("active");
+  confirmResolve(false);
+});
+confirmOkBtn.addEventListener("click", () => {
+  confirmModal.classList.remove("active");
+  confirmResolve(true);
+});
+
+// Authentication
+let currentUser = null;
+
+authForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = authEmail.value.trim();
+  const password = authPassword.value;
+  try {
+    if (isLoginMode) {
+      const res = await auth.signInWithEmailAndPassword(email, password);
+      currentUser = res.user;
+    } else {
+      const res = await auth.createUserWithEmailAndPassword(email, password);
+      currentUser = res.user;
+      // Initialize profile data
+      await db.collection("users").doc(currentUser.uid).set({
+        email,
+        name: "",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+    }
+    hideAuthModal();
+    updateUIForUser();
+    loadListings();
+    loadChatUsers();
+    loadNotifications();
+  } catch (err) {
+    alert(err.message);
+  }
+});
+
+logoutBtn.addEventListener("click", async () => {
+  await auth.signOut();
+  currentUser = null;
+  updateUIForUser();
+});
+
+// Auth state listener
+auth.onAuthStateChanged(async (user) => {
+  currentUser = user;
+  updateUIForUser();
+  if (user) {
+    loadListings();
+    loadChatUsers();
+    loadNotifications();
+    loadUserProfile();
+  }
+});
+
+function updateUIForUser() {
+  if (currentUser) {
+    userInfoSidebar.textContent = currentUser.email;
+    logoutBtn.style.display = "block";
+    if (authModal.classList.contains("active")) hideAuthModal();
+  } else {
+    userInfoSidebar.textContent = "Not logged in";
+    logoutBtn.style.display = "none";
+    activateSection("feed");
+    showAuthModal();
+  }
+}
+
+// --- Listings ---
+listingImage.addEventListener("change", () => {
+  const file = listingImage.files[0];
+  if (file) {
+    if (!["image/jpeg", "image/png"].includes(file.type)) {
+      alert("Only JPEG/PNG images allowed");
+      listingImage.value = "";
+      imagePreview.style.display = "none";
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      imagePreview.src = e.target.result;
+      imagePreview.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+  } else {
+    imagePreview.style.display = "none";
+  }
+});
+
+listingForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (!currentUser) {
+    alert("Please login first");
+    return;
+  }
+  const title = listingTitle.value.trim();
+  const description = listingDesc.value.trim();
+  let imageBase64 = null;
+
+  if (listingImage.files.length > 0) {
+    const file = listingImage.files[0];
+    imageBase64 = await fileToBase64(file);
+  }
+
+  try {
+    await db.collection("listings").add({
+      title,
+      description,
+      image: imageBase64,
+      ownerId: currentUser.uid,
+      ownerEmail: currentUser.email,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+    listingForm.reset();
+    imagePreview.style.display = "none";
+    loadListings();
+  } catch (err) {
+    alert("Failed to post listing: " + err.message);
+  }
+});
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target.result);
+    reader.onerror = () => reject("Failed to read file");
+    reader.readAsDataURL(file);
+  });
+}
+
+async function loadListings() {
+  listingsContainer.innerHTML = "<p>Loading listings...</p>";
+  try {
+    const snapshot = await db.collection("listings").orderBy("createdAt", "desc").get();
+    listingsContainer.innerHTML = "";
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const div = document.createElement("div");
+      div.className = "listing";
+      div.dataset.id = doc.id;
+      div.innerHTML = `
+        <h3>${escapeHTML(data.title)}</h3>
+        <p>${escapeHTML(data.description)}</p>
+        ${data.image ? `<img src="${data.image}" alt="Listing image"/>` : ""}
+        <small>Posted by: ${escapeHTML(data.ownerEmail)}</small>
+        <div class="actions"></div>
+      `;
+      const actions = div.querySelector(".actions");
+      if (currentUser && data.ownerId === currentUser.uid) {
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.onclick = async () => {
+          const confirmed = await showConfirm("Are you sure you want to delete this listing?");
+          if (!confirmed) return;
+          try {
+            await db.collection("listings").doc(doc.id).delete();
+            loadListings();
+          } catch (err) {
+            alert("Delete failed: " + err.message);
+          }
+        };
+        actions.appendChild(deleteBtn);
+      }
+      listingsContainer.appendChild(div);
+    });
+  } catch (err) {
+    listingsContainer.innerHTML = "<p>Error loading listings</p>";
+  }
+}
+
+function escapeHTML(text) {
+  return text.replace(/[&<>"']/g, (m) => ({
+    '&': "&amp;",
+    '<': "&lt;",
+    '>': "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[m]);
+}
+
+// --- Chat ---
+let selectedChatUser = null;
+let unsubscribeChatMessages = null;
+
+async function loadChatUsers() {
+  chatUsersList.innerHTML = "Loading users...";
+  try {
+    const snapshot = await db.collection("users").get();
+    chatUsersList.innerHTML = "";
+    snapshot.forEach(doc => {
+      const user = doc.data();
+      if (doc.id !== currentUser.uid) {
+        const btn = document.createElement("button");
+        btn.textContent = user.email || "No Email";
+        btn.dataset.uid = doc.id;
+        btn.onclick = () => {
+          selectChatUser(doc.id, user.email);
+        };
+        chatUsersList.appendChild(btn);
+      }
+    });
+  } catch {
+    chatUsersList.innerHTML = "Failed to load users.";
+  }
+}
+
+function selectChatUser(uid, email) {
+  selectedChatUser = { uid, email };
+  // Highlight active user button
+  [...chatUsersList.children].forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.uid === uid);
+  });
+  loadChatMessages();
+}
+
+function chatId(u1, u2) {
+  return u1 < u2 ? u1 + "_" + u2 : u2 + "_" + u1;
+}
+
+function loadChatMessages() {
+  if (!selectedChatUser) {
+    chatMessages.innerHTML = "<p>Select a user to chat with</p>";
+    if (unsubscribeChatMessages) unsubscribeChatMessages();
+    return;
+  }
+  chatMessages.innerHTML = "<p>Loading messages...</p>";
+  if (unsubscribeChatMessages) unsubscribeChatMessages();
+
+  const roomId = chatId(currentUser.uid, selectedChatUser.uid);
+
+  unsubscribeChatMessages = db.collection("chats")
+    .doc(roomId)
+    .collection("messages")
+    .orderBy("createdAt")
+    .onSnapshot(snapshot => {
+      chatMessages.innerHTML = "";
+      snapshot.forEach(doc => {
+        const msg = doc.data();
+        const div = document.createElement("div");
+        div.textContent = msg.text;
+        div.className = msg.senderId === currentUser.uid ? "me" : "them";
+        chatMessages.appendChild(div);
+      });
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+}
+
+chatForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (!selectedChatUser) {
+    alert("Select a user to chat with");
+    return;
+  }
+  const text = chatInput.value.trim();
+  if (!text) return;
+  const roomId = chatId(currentUser.uid, selectedChatUser.uid);
+  try {
+    await db.collection("chats")
+      .doc(roomId)
+      .collection("messages")
+      .add({
+        text,
+        senderId: currentUser.uid,
+        receiverId: selectedChatUser.uid,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+    chatInput.value = "";
+  } catch (err) {
+    alert("Failed to send message");
+  }
+});
+
+// --- Profile ---
+async function loadUserProfile() {
+  if (!currentUser) return;
+  try {
+    const doc = await db.collection("users").doc(currentUser.uid).get();
+    if (doc.exists) {
+      const data = doc.data();
+      profileName.value = data.name || "";
+      profileEmail.value = data.email || currentUser.email;
+    }
+  } catch {}
+}
+
+profileForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (!currentUser) return;
+  const name = profileName.value.trim();
+  try {
+    await db.collection("users").doc(currentUser.uid).update({
+      name,
+    });
+    alert("Profile updated");
+  } catch (err) {
+    alert("Failed to update profile");
+  }
+});
+
+// --- Notifications ---
+const notifToggleBtn = notifBtnSidebar;
+const notifBadge = sidebarNotifBadge;
+let notifications = [];
+
+notifToggleBtn.addEventListener("click", () => {
+  if (notificationsSection.style.display === "none") {
+    activateSection("notifications");
+    renderNotifications();
+  }
+});
+
+async function loadNotifications() {
+  if (!currentUser) return;
+  try {
+    const notifSnapshot = await db.collection("notifications")
+      .where("userId", "==", currentUser.uid)
+      .orderBy("createdAt", "desc")
+      .limit(50)
+      .get();
+
+    notifications = [];
+    notifSnapshot.forEach(doc => {
+      const data = doc.data();
+      notifications.push({ id: doc.id, ...data });
+    });
+
+    updateNotifBadge();
+  } catch {}
+}
+
+function updateNotifBadge() {
+  const unreadCount = notifications.filter(n => !n.read).length;
+  if (unreadCount > 0) {
+    notifBadge.textContent = unreadCount;
+    notifBadge.style.display = "inline-block";
+  } else {
+    notifBadge.style.display = "none";
+  }
+}
+
+function renderNotifications() {
+  notifDropdown.innerHTML = "";
+  if (notifications.length === 0) {
+    notifDropdown.innerHTML = "<p style='padding:12px;'>No notifications</p>";
+    return;
+  }
+  notifications.forEach(n => {
+    const div = document.createElement("div");
+    div.className = "notif-item " + (n.read ? "read" : "unread");
+    div.innerHTML = `
+      <div class="notif-text">${escapeHTML(n.text)}</div>
+      <div class="notif-time">${n.createdAt?.toDate ? n.createdAt.toDate().toLocaleString() : ""}</div>
+    `;
+    div.addEventListener("click", async () => {
+      if (!n.read) {
+        await db.collection("notifications").doc(n.id).update({ read: true });
+        n.read = true;
+        updateNotifBadge();
+        renderNotifications();
+      }
+    });
+    notifDropdown.appendChild(div);
+  });
+}
+
+// Hide notif dropdown on outside click
+document.addEventListener("click", e => {
+  if (!notifBtnSidebar.contains(e.target) && !notifDropdown.contains(e.target)) {
+    notifDropdown.style.display = "none";
+  }
+});
+notifBtnSidebar.addEventListener("click", () => {
+  if (notifDropdown.style.display === "block") {
+    notifDropdown.style.display = "none";
+  } else {
+    notifDropdown.style.display = "block";
+  }
+});
+
+// Initial UI state
+activateSection("feed");
+</script>
+
+</body>
+</html>
